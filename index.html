@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Science Quiz Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .game-screen {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .game-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: #495057;
+        }
+        
+        .game-screen p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .start-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(79, 172, 254, 0.4);
+        }
+        
+        .question-container {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-number::before {
+            content: "📌";
+            margin-right: 10px;
+        }
+        
+        .question-text {
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .option {
+            padding: 18px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: #fafafa;
+            text-align: left;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #4facfe;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            border-color: #4facfe;
+            background: #e3f2fd;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            animation: pulse 0.5s;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .option-letter {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            background: #4facfe;
+            color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+            border-left: 4px solid #28a745;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .controls {
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+        
+        .score-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #495057;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .next-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .next-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .final-score {
+            text-align: center;
+            padding: 50px 30px;
+        }
+        
+        .final-score h2 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .score-circle {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 35px;
+            color: white;
+            font-size: 3.2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .score-message {
+            font-size: 1.4rem;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            color: #495057;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.95rem;
+            margin-top: 12px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-message::before {
+            content: "⚠️";
+            margin-right: 8px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .option {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .score-circle {
+                width: 180px;
+                height: 180px;
+                font-size: 2.5rem;
+            }
+            
+            .final-score h2 {
+                font-size: 2.2rem;
+            }
+            
+            .score-message {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .score-display {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Computer Science Quiz Game 🎮</h1>
+            <p>Test your knowledge across 8 chapters of Computer Science</p>
+        </div>
+        
+        <!-- Game Start Screen -->
+        <div id="game-start" class="game-screen">
+            <h2>Ready to Play?</h2>
+            <p>Answer 80 questions from 8 different chapters of Computer Science! Each correct answer earns you 1 point.</p>
+            <p>You must answer each question before moving to the next. Choose wisely!</p>
+            <button class="btn start-btn" id="start-btn">Start Game</button>
+        </div>
+        
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="hidden">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls hidden" id="quiz-controls">
+            <div class="score-display">Score: <span id="current-score">0</span>/80</div>
+            <button id="next-btn" class="next-btn" disabled>Next Question</button>
+            <button id="submit-btn" class="submit-btn hidden">Finish Game</button>
+        </div>
+        
+        <!-- Final Score -->
+        <div id="final-score" class="final-score hidden">
+            <h2>Game Over! 🎉</h2>
+            <div class="score-circle" id="final-score-circle">0/80</div>
+            <div class="score-message" id="score-message"></div>
+            <button class="restart-btn" id="restart-btn">Play Again</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            // Chapter 1: Computer Systems (15 questions)
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "What is the binary representation of the decimal number -43 using 8-bit two's complement notation?",
+                options: ["10101011", "11010101", "11010101", "11101011"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which of the following binary numbers corresponds to the hexadecimal number 3FA7?",
+                options: ["0011 1111 1010 0111", "1100 0011 1101 1000", "1011 1100 0011 0111", "0111 1011 1011 1100"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "How does the ASCII code for the character 'Z' (90 in decimal) look in binary?",
+                options: ["01011010", "01001110", "01011000", "01101001"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "In an 8-bit signed integer representation, what is the range of values that can be represented?",
+                options: ["-127 to 128", "-128 to 127", "0 to 255", "-256 to 255"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "How many different values can be represented with a 10-bit binary number?",
+                options: ["256", "1024", "512", "2048"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which of the following is NOT a task performed by an operating system?",
+                options: ["Process Management", "Memory Management", "Email Management", "Device Management"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which type of operating system allows multiple tasks to be performed at the same time?",
+                options: ["Multiprogramming", "Batch Processing", "Real-time", "Single-tasking"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which state of a process represents that it is ready for execution but waiting for CPU time?",
+                options: ["Start State", "Running State", "Ready State", "Blocked State"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "What is the main purpose of a process scheduler?",
+                options: ["To manage file operations", "To manage CPU utilization", "To manage memory allocation", "To manage network resources"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which memory management approach involves dividing memory into fixed-sized blocks?",
+                options: ["Paging", "Segmentation", "Virtual Memory", "Contiguous Allocation"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "What is the main purpose of interrupts in an operating system?",
+                options: ["To speed up CPU processing", "To slow down CPU processing", "To handle immediate events", "To manage network connections"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which scheduling algorithm assigns CPU time in fixed time slices to each process in a cyclic order?",
+                options: ["First-Come First-Served (FCFS)", "Shortest Job Next (SJN)", "Priority Scheduling", "Round Robin (RR)"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which memory management technique divides memory into fixed-sized blocks?",
+                options: ["Segmentation", "Paging", "Fixed Partitioning", "Dynamic Partitioning"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which type of hosting involves installing and running software on servers located within an organization's physical premises?",
+                options: ["Shared Hosting", "Dedicated Hosting", "On-Premises Hosting", "Cloud Hosting"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 1: Computer Systems",
+                question: "Which component of programming software translates code written in a high-level programming language into machine code?",
+                options: ["Text Editor", "Debugger", "IDE", "Compiler"],
+                correct: 3
+            },
+            
+            // Chapter 2: Computational Thinking & Algorithms (10 questions)
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "Identify the activity that is based on personal preferences rather than algorithmic logic.",
+                options: ["Sorting numbers in a list", "Deciding what to eat for dinner", "Determining if a number is prime", "Calculating the square root"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "Counting Principle Problems could easily be understood by the use of:",
+                options: ["Graph representation", "Tree representation", "Clock representation", "Map representation"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "In how many ways can you choose 2 out of 5 different books? (Order doesn't matter)",
+                options: ["10", "18", "20", "5"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "A committee of 3 is selected from 8 people. How many committees?",
+                options: ["56", "84", "120", "336"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "You have 5 shirts and 4 pants. How many outfits?",
+                options: ["9", "20", "15", "28"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "In how many ways can you select 3 fruits from 7 different fruits?",
+                options: ["35", "21", "84", "210"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "The Pigeonhole Principle states that if more items are placed into containers than there are containers, then:",
+                options: ["Some containers must be empty", "At least one container holds more than one item", "All containers will be full", "Each item goes in a different container"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "In a group of 50 students: 30 did math, 25 did science, 15 did both. How many did at least one?",
+                options: ["35", "40", "45", "18"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "Which property ensures an algorithm produces at least one output?",
+                options: ["Input", "Output", "Definiteness", "Finiteness"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 2: Computational Thinking & Algorithms",
+                question: "Which property ensures an algorithm ends after finite steps?",
+                options: ["Input", "Finiteness", "Effectiveness", "Generality"],
+                correct: 1
+            },
+            // Chapter 3: Programming Fundamentals (15 questions)
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Which is primarily associated with front-end development?",
+                options: ["Server management", "Database design", "User interface and design", "Memory management"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Which HTML attribute is required in <input> for email?",
+                options: ["type=\"uri\"", "type=\"text\"", "type=\"email\"", "type=\"password\""],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "In JavaScript, which method adds a new item to the end of a list?",
+                options: ["push()", "add()", "leftshift()", "rightshift()"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "How do you access the third element in myArray?",
+                options: ["myArray[3]", "myArray[2]", "myArray[1]", "myArray[0]"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "To manually stop JavaScript execution, use:",
+                options: ["console.log()", "stop", "break", "debugger"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "What is the primary purpose of unit tests?",
+                options: ["Validate syntax", "Test individual parts for correctness", "Style UI", "Deploy code"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Front-end development is also called:",
+                options: ["Label", "Client-side", "Server", "Database"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Tables organize information in:",
+                options: ["Columns", "Rows", "Webpages", "Lists"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Table header cell is referred by:",
+                options: ["<th>", "<std>", "<caption>", "<trp>"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "The link between borders of neighboring table cells is determined by:",
+                options: ["link border", "border-collapse", "border-separate", "border"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Distance between a cell's border and its content is called:",
+                options: ["Cell", "Output", "Padding", "Style"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "An element's style during animation is specified by:",
+                options: ["@keyframes", "@style-frame", "@highlighted-frame", "@anchor-frame"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "A single table cell is indicated by:",
+                options: ["<tc>", "<th>", "<td>", "<sth>"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "Arrays and lists can contain data types including:",
+                options: ["Alphabets", "Numbers", "Alphanumeric", "Checkboxes"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 3: Programming Fundamentals",
+                question: "ADT stands for:",
+                options: ["Abstract Data Type", "Abstract Document Type", "AU Data Type", "Any Data Type"],
+                correct: 0
+            },
+            
+            // Chapter 4: Data and Analysis (10 questions)
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Primary benefit of integrating Math/Stats with CS in Data Science?",
+                options: ["Improved visualization", "Better forecasting", "Increased accuracy", "Better decision making"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Relationship between Data Science and AI?",
+                options: ["Data Science ⊂ AI", "AI is a tool in Data Science", "Unrelated", "Data Science enables AI"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Fundamental assumption of the Turing Test?",
+                options: ["Humans are better", "Machines are equal", "Intelligence varies", "Machines can imitate humans"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Critical consideration for AI chatbots?",
+                options: ["User experience", "Data security", "Contextual awareness", "Emotional intelligence"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Ethical consideration of AI in daily devices?",
+                options: ["Job displacement", "Energy use", "Better service", "Enhanced security"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "AI field enabling face recognition on phones?",
+                options: ["NLP", "Computer Vision", "Deep Learning", "Neural Networks"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Best model to categorize feedback (positive/negative/neutral)?",
+                options: ["Supervised learning", "Unsupervised", "Reinforcement", "Deep learning"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "In Reinforcement Learning, rewards/penalties help:",
+                options: ["Label data", "Evaluate performance", "Improve action choices", "Classify outcomes"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Stage ensuring model accuracy, reliability, and privacy compliance?",
+                options: ["Deployment", "Evaluation", "Data Analysis", "Maintenance"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 4: Data and Analysis",
+                question: "Key characteristic of \"Data Cleaning\"?",
+                options: ["Data collection", "Error removal & organization", "Pattern ID", "Model deployment"],
+                correct: 1
+            },
+            // Chapter 5: Emerging Technologies (8 questions)
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "Technology for supply chain management:",
+                options: ["IoT", "Blockchain", "Cloud Computing", "AI Assistant"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "Technology for automation in industry, healthcare, home, traffic:",
+                options: ["IoT", "Blockchain", "Cloud Computing", "Robotics"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "Alternative to on-premises computing:",
+                options: ["AI Computing", "Server Computing", "Cloud Computing", "Network Computing"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "AI branch that understands human text/spoken words:",
+                options: ["Language Translation", "Digital Language Processing", "Robotics", "Natural Language Processing"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "Technology that enabled cryptocurrency:",
+                options: ["Cloud Computing", "Blockchain", "Robotics", "IoT"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "Microsoft's virtual assistant:",
+                options: ["Cortana", "Siri", "Alexa", "Bixby"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "Predictive words while typing are called:",
+                options: ["Document Analysis", "Sentiment Analysis", "Predictive Text", "Internet Suggestion"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 5: Emerging Technologies",
+                question: "AI-generated fake realistic videos are called:",
+                options: ["Privacy Breach Videos", "Social Manipulation Videos", "Misinformation Videos", "Deepfake Videos"],
+                correct: 3
+            },
+            
+            // Chapter 6: Impacts of Computer (15 questions)
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Key reason to be careful online?",
+                options: ["Save money", "Avoid addiction & protect info", "Become popular", "Learn skills"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Harm of too much online time?",
+                options: ["Mental health & productivity", "Physical fitness", "Shopping", "Travel"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "NOT a way to protect personal info?",
+                options: ["Strong passwords", "Alert for scams", "Share passwords with friends", "Update privacy settings"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Technology addiction is:",
+                options: ["Occasional use", "Excessive use", "Avoiding tech", "Work-only use"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Common result of excessive screen time?",
+                options: ["Better social skills", "Social isolation", "Better grades", "More physical activity"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Way to reduce tech addiction?",
+                options: ["More gaming", "Recognize signs & limit use", "Share info online", "Ignore it"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Benefit of using internet for good?",
+                options: ["More fraud", "Access to education", "Misinfo", "Cyberbullying"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Positive internet use?",
+                options: ["Cybercrime", "Online harassment", "Supporting social meetings", "Illegal content"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Protect device from threats?",
+                options: ["No antivirus", "Ignore updates", "Use biometric auth", "Share passwords"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Hardware method to protect devices?",
+                options: ["Biometric auth", "Secure boot", "Firewalls", "All"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "What is a public cloud?",
+                options: ["One org only", "Offered to public by third party", "Private network", "Secure boot process"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Primary goal of cybersecurity?",
+                options: ["Faster internet", "Protect systems & networks", "Develop software", "Make social media"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Legal online activity?",
+                options: ["Hacking", "Stealing data", "Developing a mobile app", "Deploying malware"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Why is cybersecurity essential?",
+                options: ["Faster data", "Less tech support", "Cheaper internet", "Protect data from malicious actors"],
+                correct: 3
+            },
+            {
+                chapter: "Chapter 6: Impacts of Computer",
+                question: "Role of students in minimizing digital divide?",
+                options: ["Make games", "Provide tech training", "Lower device prices", "Make social accounts"],
+                correct: 1
+            },
+            // Chapter 7: Digital Literacy (10 questions)
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Ability to use digital tech to access, evaluate, and create info:",
+                options: ["Literacy", "Social Media", "Digital Literacy", "Information"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Best way to collect info on a topic?",
+                options: ["Ask friend", "Read random book", "Search online & ask experts", "Guess"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Benefit of Google Forms?",
+                options: ["Collect small data", "Quickly analyze & summarize", "Get historical data", "Visualize data"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Most important step to convert info into graphics?",
+                options: ["Decide purpose", "Select tool", "Check laws", "Decide design elements"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Primary purpose of billboard design?",
+                options: ["Show identity", "Entertain", "Grab attention", "Provide details"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Benefit of podcast as learning tool?",
+                options: ["Brief overview", "Interactive info", "Int'l news platform", "Language learning"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Role of podcast host?",
+                options: ["Share opinion", "Guide conversation", "Criticize guest", "Praise guest"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Common social media use (besides calls)?",
+                options: ["Education", "Sharing updates", "Translation", "Web surfing"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Platform for tutorials, skills, entertainment videos?",
+                options: ["YouTube", "Facebook", "Instagram", "Podcast"],
+                correct: 0
+            },
+            {
+                chapter: "Chapter 7: Digital Literacy",
+                question: "Platform for news, discussion, opinions?",
+                options: ["Facebook", "YouTube", "X (Twitter)", "Instagram"],
+                correct: 2
+            },
+            
+            // Chapter 8: Entrepreneurship in Digital Age (7 questions)
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Primary goal of quantitative research?",
+                options: ["Understand concepts", "Test theories", "Explore culture", "Gather subjective insights"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Common qualitative research method?",
+                options: ["Stats", "Closed surveys", "Thematic analysis", "Experiments"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Data type in quantitative research?",
+                options: ["Text", "Words", "Numerical values", "Images"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Method to understand feelings about a product?",
+                options: ["Likert survey", "In-depth interviews", "Experiment", "Observation"],
+                correct: 1
+            },
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Best for detailed, open feedback?",
+                options: ["Closed-ended", "Likert", "Open-ended", "Binary"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Problem with self-administered questionnaires?",
+                options: ["High cost", "High response", "Non-response bias", "Experimenter bias"],
+                correct: 2
+            },
+            {
+                chapter: "Chapter 8: Entrepreneurship in Digital Age",
+                question: "Method to avoid question framing bias?",
+                options: ["Leading Qs", "Double negatives", "Balanced framing", "Avoid jargon"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let answeredCorrectly = new Array(questions.length).fill(false);
+        let hasAnsweredCurrent = false;
+
+        function createQuestionElement(index) {
+            const question = questions[index];
+            const container = document.createElement('div');
+            container.className = 'question-container';
+            container.id = `question-${index}`;
+            
+            if (index > 0) {
+                container.style.display = 'none';
+            }
+            
+            container.innerHTML = `
+                <div class="question-number">${question.chapter}</div>
+                <div class="question-text">${index + 1}. ${question.question}</div>
+                <div class="options" id="options-${index}">
+                    ${question.options.map((option, i) => `
+                        <div class="option" data-option="${i}" id="option-${index}-${i}">
+                            <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                            <div>${option}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="feedback" id="feedback-${index}"></div>
+                <div class="error-message" id="error-${index}" style="display: none;">Please select an answer before proceeding.</div>
+            `;
+            
+            return container;
+        }
+
+        function initializeQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = '';
+            
+            // Create all 80 questions
+            for (let i = 0; i < questions.length; i++) {
+                quizContainer.appendChild(createQuestionElement(i));
+            }
+            
+            // Reset variables
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            answeredCorrectly = new Array(questions.length).fill(false);
+            hasAnsweredCurrent = false;
+            
+            // Reset buttons
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            nextBtn.disabled = true;
+            submitBtn.classList.add('hidden');
+            
+            // Update score display
+            document.getElementById('current-score').textContent = score;
+            
+            // Show first question
+            showQuestion(0);
+        }
+
+        function checkAnswer(questionIndex, selectedOption) {
+            // If already answered, don't allow changing
+            if (hasAnsweredCurrent && questionIndex === currentQuestion) {
+                return;
+            }
+            
+            const correctAnswer = questions[questionIndex].correct;
+            const options = document.querySelectorAll(`#options-${questionIndex} .option`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            const errorElement = document.getElementById(`error-${questionIndex}`);
+            
+            // Hide error message
+            errorElement.style.display = 'none';
+            
+            // Mark as answered
+            hasAnsweredCurrent = true;
+            
+            // Reset previous selections
+            options.forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            options[selectedOption].classList.add('selected');
+            
+            // Check if correct
+            if (selectedOption === correctAnswer) {
+                options[selectedOption].classList.add('correct');
+                feedback.textContent = "✅ Correct!";
+                feedback.className = "feedback correct";
+                
+                if (!answeredCorrectly[questionIndex]) {
+                    score++;
+                    answeredCorrectly[questionIndex] = true;
+                }
+            } else {
+                options[selectedOption].classList.add('incorrect');
+                options[correctAnswer].classList.add('correct');
+                feedback.textContent = `❌ Incorrect! Correct answer: ${String.fromCharCode(65 + correctAnswer)}`;
+                feedback.className = "feedback incorrect";
+                
+                if (answeredCorrectly[questionIndex]) {
+                    score--;
+                    answeredCorrectly[questionIndex] = false;
+                }
+            }
+            
+            userAnswers[questionIndex] = selectedOption;
+            document.getElementById('current-score').textContent = score;
+            
+            // Enable next button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = false;
+            
+            // Enable submit button if last question
+            if (questionIndex === questions.length - 1) {
+                document.getElementById('submit-btn').classList.remove('hidden');
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        function showQuestion(index) {
+            // Hide all questions
+            document.querySelectorAll('.question-container').forEach(q => {
+                q.style.display = 'none';
+            });
+            
+            // Show current question
+            document.getElementById(`question-${index}`).style.display = 'block';
+            currentQuestion = index;
+            
+            // Reset answered state for current question
+            hasAnsweredCurrent = userAnswers[index] !== null;
+            
+            // Update button states
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (hasAnsweredCurrent) {
+                nextBtn.disabled = false;
+                if (index === questions.length - 1) {
+                    nextBtn.classList.add('hidden');
+                    submitBtn.classList.remove('hidden');
+                } else {
+                    nextBtn.classList.remove('hidden');
+                    submitBtn.classList.add('hidden');
+                }
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+            
+            // Update score display
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function showFinalScore() {
+            const finalScoreContainer = document.getElementById('final-score');
+            const quizContainer = document.getElementById('quiz-container');
+            const controls = document.getElementById('quiz-controls');
+            
+            quizContainer.classList.add('hidden');
+            controls.classList.add('hidden');
+            finalScoreContainer.classList.remove('hidden');
+            
+            document.getElementById('final-score-circle').textContent = `${score}/80`;
+            
+            const percentage = (score / questions.length) * 100;
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = "🏆 Champion! You've mastered Computer Science! 🎉";
+            } else if (percentage >= 80) {
+                message = "🎯 Excellent! You're a Computer Science expert! 👍";
+            } else if (percentage >= 70) {
+                message = "💪 Great job! You know your stuff! Keep it up!";
+            } else if (percentage >= 60) {
+                message = "📚 Good effort! You're on the right track! Study more!";
+            } else {
+                message = "🎯 Keep practicing! Every expert was once a beginner! 🎯";
+            }
+            
+            document.getElementById('score-message').textContent = message;
+        }
+
+        function startGame() {
+            document.getElementById('game-start').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-controls').classList.remove('hidden');
+            document.getElementById('final-score').classList.add('hidden');
+            
+            initializeQuiz();
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        // Event listeners
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('option') || e.target.closest('.option')) {
+                const optionElement = e.target.classList.contains('option') ? e.target : e.target.closest('.option');
+                const questionIndex = parseInt(optionElement.closest('.question-container').id.split('-')[1]);
+                // Only allow selection if it's the current question and not already answered
+                if (questionIndex === currentQuestion && !hasAnsweredCurrent) {
+                    const selectedOption = parseInt(optionElement.dataset.option);
+                    checkAnswer(questionIndex, selectedOption);
+                }
+            }
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            // Check if current question is answered
+            if (!hasAnsweredCurrent) {
+                const errorElement = document.getElementById(`error-${currentQuestion}`);
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            // Final validation - ensure last question is answered
+            if (!hasAnsweredCurrent) {
+                const errorElement = document.getElementById(`error-${currentQuestion}`);
+                errorElement.style.display = 'block';
+                return;
+            }
+            showFinalScore();
+        });
+
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            restartGame();
+        });
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            startGame();
+        });
+    </script>
+</body>
+</html>
